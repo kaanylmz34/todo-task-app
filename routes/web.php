@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Models\Task;
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -24,7 +25,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     # Anasayfa
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        // All Tasks
+        $tasks = Task::all();
+
+        return view('dashboard', compact('tasks'));
     })->name('dashboard');
 
     Route::prefix('/users')->group(function() {
