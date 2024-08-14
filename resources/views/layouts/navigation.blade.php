@@ -13,8 +13,13 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        Görevlerim
                     </x-nav-link>
+                    @can('user.list')
+                        <x-nav-link :href="route('user.list')" :active="request()->routeIs('user.list')">
+                            Kullanıcılar
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
