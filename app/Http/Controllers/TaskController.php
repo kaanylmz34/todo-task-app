@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 
 class TaskController extends Controller
 {
 
     // Get List
-    public function index()
+    function index()
     {
         $tasks = Task::all()->map(function ($item)
         {
@@ -30,11 +31,27 @@ class TaskController extends Controller
     }
 
     // Store
-    public function store(CreateTaskRequest $request)
+    function store(CreateTaskRequest $request)
     {
         $task = Task::create(array_merge($request->validated(), ['user_id' => auth()->id()]));
 
         return response()->json($task, 201);
+    }
+
+    // Update
+    function update(UpdateTaskRequest $request, Task $task)
+    {
+        $task->update($request->validated());
+
+        return response()->json($task);
+    }    
+
+    // Destroy
+    function destroy(Task $task)
+    {
+        $task->delete();
+
+        return response()->json(null, 204);
     }
 
 }

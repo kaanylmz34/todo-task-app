@@ -37,7 +37,7 @@
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                     Görev Oluştur
-                    <button type="button" class="inline-flex justify-center rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 float-right" onclick="$('#addTaskModal').toggleClass('hidden')">
+                    <button type="button" class="inline-flex justify-center rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 float-right" onclick="$('#addTaskModal').toggleClass('hidden');">
                       <span class="sr-only">Close</span>
                       <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -116,7 +116,7 @@
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
                     Görev Görüntüle
-                    <button type="button" class="inline-flex justify-center rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 float-right" onclick="$('#showTaskModal').toggleClass('hidden')">
+                    <button type="button" class="close inline-flex justify-center rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 float-right">
                       <span class="sr-only">Close</span>
                       <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -126,6 +126,7 @@
                   <div class="mt-2">
                     <form id="showTaskForm" method="POST">
                       @csrf
+                      @method('PUT')
                       <div>
                         <label for="title" class="block text-sm font-medium text-gray-700">Başlık</label>
                         <input type="text" name="title" id="title" autocomplete="off" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" disabled>
@@ -166,18 +167,21 @@
                           <option value="high">Yüksek</option>
                         </select>
                       </div>
+                      @can('task.update')
                       <!-- Düzenle düğmesi -->
                       <div class="mt-2 pb-[35px] flex gap-x-5 justify-end items-center">
                         <button type="button" id="editTask" class="inline-flex float-right justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                           Düzenle
                         </button>
-                        <button type="submit" class="float-right justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hidden">
+                        <button type="submit" id="updateTask" class="float-right justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hidden">
                           Kaydet
                         </button>
                         <button type="button" id="goBack" class="float-right justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 hidden">
                           Geri Dön
                         </button>
+                         <a href="#" id="deleteTask" class="text-red-600 hover:text-red-900">Sil</a>
                       </div>
+                      @endcan
                     </form>
                   </div>
                 </div>
@@ -194,7 +198,17 @@
 <script src='http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.min.js'></script>
 <link href='http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.css' rel='stylesheet' />
 <script>
+  'use strict';
+
    $(function() {
+        let currentTaskId = null;
+
+        // close
+        $('.close').click(function() {
+          $('#showTaskModal').toggleClass('hidden');
+          currentTaskId = null;
+        });
+
         @can('task.list')
         $('#calendar').fullCalendar({
             header: {
@@ -247,6 +261,7 @@
                   'Yüksek': 'high'
                 }[event.priority]
               );
+              currentTaskId = event.id;
               @endcan
               @cannot('task.show')
               alert('Görev detaylarını görüntülemek için yetkiniz yok.');
@@ -289,6 +304,8 @@
           if (!$('#showTaskModal').hasClass('hidden')) {
             $('#showTaskModal').toggleClass('hidden');
           }
+
+          currentTaskId = null;
         });
 
         // createTaskForm
@@ -317,6 +334,7 @@
           $('#showTaskForm input:not([name=_token])').prop('disabled', false);
           $('#showTaskForm select').prop('disabled', false);
           $('#showTaskForm #editTask').toggleClass('hidden');
+          $('#showTaskForm textarea').prop('disabled', false);
           $('#showTaskForm button[type=submit]').toggleClass('hidden');
           $('#showTaskForm button:last-child').toggleClass('hidden');
         });
@@ -325,9 +343,65 @@
         $('#goBack').click(function() {
           $('#showTaskForm input:not([name=_token])').prop('disabled', true);
           $('#showTaskForm select').prop('disabled', true);
+          $('#showTaskForm textarea').prop('disabled', true);
           $('#showTaskForm #editTask').toggleClass('hidden');
           $('#showTaskForm button[type=submit]').toggleClass('hidden');
           $('#showTaskForm button:last-child').toggleClass('hidden');
+        });
+        @endcan
+
+        @can('task.update')
+        // updateTask
+        $('#updateTask').click(function(e) {
+          e.preventDefault();
+
+          var formData = $('#showTaskForm').serialize();
+
+          $.ajax({
+            url: "/tasks/" + currentTaskId,
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+              $('#showTaskForm input:not([name=_token])').prop('disabled', true);
+              $('#showTaskForm select').prop('disabled', true);
+              $('#showTaskForm #editTask').toggleClass('hidden');
+              $('#showTaskForm button[type=submit]').toggleClass('hidden');
+              $('#showTaskForm button:last-child').toggleClass('hidden');
+              $('#calendar').fullCalendar('refetchEvents');
+            },
+            error: function(response) {
+              alert(response.responseJSON.message);
+              console.log(response);
+            }
+          });
+        });
+        @endcan
+
+        @can('task.destroy')
+        // deleteTask
+        $('#deleteTask').click(function(e) {
+          e.preventDefault();
+
+          // confirmation
+          if (!confirm('Silmek istediğinize emin misiniz?')) {
+            return false;
+          }
+
+          $.ajax({
+            url: "/tasks/" + currentTaskId,
+            type: 'DELETE',
+            data: {
+              _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+              $('#showTaskModal').toggleClass('hidden');
+              $('#calendar').fullCalendar('refetchEvents');
+            },
+            error: function(response) {
+              alert(response.responseJSON.message);
+              console.log(response);
+            }
+          });
         });
         @endcan
   });
