@@ -3,7 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TaskController;
 use App\Models\Task;
+use App\Models\User;
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -28,7 +30,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // All Tasks
         $tasks = Task::all();
 
-        return view('dashboard', compact('tasks'));
+        // All Users
+        $users = User::all();
+
+        return view('dashboard', compact('tasks', 'users'));
     })->name('dashboard');
 
     Route::prefix('/users')->group(function() {
@@ -39,6 +44,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('can:user.edit');
         Route::put('/{user}', [UserController::class, 'update'])->name('user.update')->middleware('can:user.update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('user.destroy')->middleware('can:user.destroy');
+    });
+
+    Route::prefix('/tasks')->group(function() {
+        Route::get('/', [TaskController::class, 'index'])->name('task.list')->middleware('can:task.list');
+        Route::get('/create', [TaskController::class, 'create'])->name('task.create')->middleware('can:task.create');
+        Route::post('/', [TaskController::class, 'store'])->name('task.store')->middleware('can:task.store');
+        Route::get('/{task}', [TaskController::class, 'show'])->name('task.show')->middleware('can:task.show');
+        Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('task.edit')->middleware('can:task.edit');
+        Route::put('/{task}', [TaskController::class, 'update'])->name('task.update')->middleware('can:task.update');
+        Route::delete('/{task}', [TaskController::class, 'destroy'])->name('task.destroy')->middleware('can:task.destroy');
     });
 
 });
