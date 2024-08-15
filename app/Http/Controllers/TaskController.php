@@ -24,6 +24,7 @@ class TaskController extends Controller
                 'assigned_to' => $item->assigned_to,
                 'priority' => $item->priority,
                 'status' => $item->status,
+                'color' => ['low' => 'green', 'medium' => 'orange', 'high' => 'red'][$item->priority],
             ];
         });
 

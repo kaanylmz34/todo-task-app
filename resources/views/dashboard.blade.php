@@ -246,21 +246,9 @@
               $('#showTaskForm #description').val(event.description);
               $('#showTaskForm #start_date').val(event.start.format('YYYY-MM-DD'));
               $('#showTaskForm #end_date').val(event.end.format('YYYY-MM-DD'));
-              $('#showTaskForm #status').val(
-                {
-                  'Yapılacak': 'todo',
-                  'Devam Ediyor': 'in_progress',
-                  'Tamamlandı': 'done'
-                }[event.status]
-              );
+              $('#showTaskForm #status').val(event.status);
               $('#showTaskForm #assigned_to').val(event.assigned_to);
-              $('#showTaskForm #priority').val(
-                {
-                  'Düşük': 'low',
-                  'Orta': 'medium',
-                  'Yüksek': 'high'
-                }[event.priority]
-              );
+              $('#showTaskForm #priority').val(event.priority);
               currentTaskId = event.id;
               @endcan
               @cannot('task.show')

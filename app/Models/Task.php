@@ -30,17 +30,6 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    public function getStatusAttribute($value)
-    {
-        # Bu kısım dil fonksiyonları ile de ayarlanabilir ben basitçe array kullandım.
-        return ['todo' => 'Yapılacak','in_progress' => 'Devam Ediyor','done' => 'Tamamlandı'][$value];
-    }
-
-    public function getPriorityAttribute($value)
-    {
-        return ['low' => 'Düşük','medium' => 'Orta','high' => 'Yüksek'][$value];
-    }
-
     public function setStartDateAttribute($value)
     {
         $this->attributes['start_date'] = date('Y-m-d', strtotime($value));
