@@ -324,7 +324,7 @@
           $('#showTaskForm #editTask').toggleClass('hidden');
           $('#showTaskForm textarea').prop('disabled', false);
           $('#showTaskForm button[type=submit]').toggleClass('hidden');
-          $('#showTaskForm button:last-child').toggleClass('hidden');
+          $('#goBack').toggleClass('hidden');
         });
 
         // goBack
@@ -334,7 +334,7 @@
           $('#showTaskForm textarea').prop('disabled', true);
           $('#showTaskForm #editTask').toggleClass('hidden');
           $('#showTaskForm button[type=submit]').toggleClass('hidden');
-          $('#showTaskForm button:last-child').toggleClass('hidden');
+          $('#goBack').toggleClass('hidden');
         });
         @endcan
 
