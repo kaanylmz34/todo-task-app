@@ -39,7 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('/users')->group(function() {
         Route::get('/', [UserController::class, 'index'])->name('user.list')->middleware('can:user.list');
         Route::get('/create', [UserController::class, 'create'])->name('user.create')->middleware('can:user.create');
-        Route::post('/', [UserController::class, 'store'])->name('user.store')->middleware('can:user.store');
+        Route::post('/', [UserController::class, 'store'])->name('user.store')->middleware('can:user.store')->middleware('throttle:5,1');
         Route::get('/{user}', [UserController::class, 'show'])->name('user.show')->middleware('can:user.show');
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('can:user.edit');
         Route::put('/{user}', [UserController::class, 'update'])->name('user.update')->middleware('can:user.update');
@@ -47,9 +47,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('/tasks')->group(function() {
-        Route::get('/', [TaskController::class, 'index'])->name('task.list')->middleware('can:task.list');
+        Route::get('/', [TaskController::class, 'index'])->name('task.list')->middleware('can:task.list')->middleware('throttle:100,1');
         Route::get('/create', [TaskController::class, 'create'])->name('task.create')->middleware('can:task.create');
-        Route::post('/', [TaskController::class, 'store'])->name('task.store')->middleware('can:task.store');
+        Route::post('/', [TaskController::class, 'store'])->name('task.store')->middleware('can:task.store')->middleware('throttle:5,1');
         Route::get('/{task}', [TaskController::class, 'show'])->name('task.show')->middleware('can:task.show');
         Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('task.edit')->middleware('can:task.edit');
         Route::put('/{task}', [TaskController::class, 'update'])->name('task.update')->middleware('can:task.update');

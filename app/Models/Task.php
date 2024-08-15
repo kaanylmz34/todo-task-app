@@ -33,22 +33,12 @@ class Task extends Model
     public function getStatusAttribute($value)
     {
         # Bu kısım dil fonksiyonları ile de ayarlanabilir ben basitçe array kullandım.
-        return ['todo' => 'Planlanan','in_progress' => 'İşlemde','done' => 'Tamamlandı'][$value];
+        return ['todo' => 'Yapılacak','in_progress' => 'Devam Ediyor','done' => 'Tamamlandı'][$value];
     }
 
     public function getPriorityAttribute($value)
     {
         return ['low' => 'Düşük','medium' => 'Orta','high' => 'Yüksek'][$value];
-    }
-
-    public function getStartDateAttribute($value)
-    {
-        return date('d/m/Y', strtotime($value));
-    }
-
-    public function getEndDateAttribute($value)
-    {
-        return date('d/m/Y', strtotime($value));
     }
 
     public function setStartDateAttribute($value)
